@@ -6,6 +6,8 @@ services:
     environment:
       - node.name=elasticsearch1
       - cluster.name=docker-cluster
+      - "discovery.zen.ping.unicast.hosts=elasticsearch2,elasticsearch3"
+      - "discovery.zen.minimum_master_nodes=2"
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
       - http.cors.enabled=true
@@ -75,7 +77,8 @@ services:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1,elasticsearch3"
+      - "discovery.zen.minimum_master_nodes=2"
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=_eth0_
@@ -142,7 +145,8 @@ services:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1,elasticsearch2"
+      - "discovery.zen.minimum_master_nodes=2"
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=_eth0_

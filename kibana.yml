@@ -1,5 +1,9 @@
 server.name: localhost
 server.host: "0.0.0.0"
+server.ssl.enabled: true
+server.ssl.certificate: /usr/share/kibana/config/certs/kibana/kibana.crt
+server.ssl.key: /usr/share/kibana/config/certs/kibana/kibana.key
+
 elasticsearch.hosts: ["http://elasticsearch1:9200"]
 elasticsearch.ssl.certificateAuthorities: /usr/share/kibana/config/certs/ca/ca.crt
 elasticsearch.username: "elastic"
