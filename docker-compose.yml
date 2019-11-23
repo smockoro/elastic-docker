@@ -1,0 +1,267 @@
+version: '3.7'
+services:
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.4
+    container_name: elasticsearch1
+    environment:
+      - node.name=elasticsearch1
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$CERTS_DIR/elasticsearch1/elasticsearch1.crt
+      - xpack.ssl.key=$CERTS_DIR/elasticsearch1/elasticsearch1.key
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    # privileged: true
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          cpus: '1'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    volumes:
+      - type: volume
+        source: logs
+        target: /var/log
+      - type: volume
+        source: esdata1
+        target: /usr/share/elasticsearch/data
+      - ./plugin/6.8.4:/root
+      - ./install-plugin.sh:/root/install-plugin.sh
+      - ./certs:$CERTS_DIR
+    networks:
+      - elastic
+      - ingress
+    ports:
+      - 9200:9200
+      - 9300:9300
+    entrypoint: >
+        bash -c "chmod +x /root/install-plugin.sh &&
+                 /root/install-plugin.sh repository-azure &&
+                 /root/install-plugin.sh analysis-kuromoji &&
+                 /root/install-plugin.sh analysis-icu &&
+               docker-entrypoint.sh"
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.4
+    container_name: elasticsearch2
+    environment:
+      - node.name=elasticsearch2
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$CERTS_DIR/elasticsearch2/elasticsearch2.crt
+      - xpack.ssl.key=$CERTS_DIR/elasticsearch2/elasticsearch2.key
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    # privileged: true
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          cpus: '1'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    volumes:
+      - type: volume
+        source: logs
+        target: /var/log
+      - type: volume
+        source: esdata2
+        target: /usr/share/elasticsearch/data
+      - ./plugin/6.8.4:/root
+      - ./install-plugin.sh:/root/install-plugin.sh
+      - ./certs:$CERTS_DIR
+    networks:
+      - elastic
+      - ingress
+    ports:
+      - 9201:9200
+    entrypoint: >
+        bash -c "chmod +x /root/install-plugin.sh &&
+                 /root/install-plugin.sh repository-azure &&
+                 /root/install-plugin.sh analysis-kuromoji &&
+                 /root/install-plugin.sh analysis-icu &&
+               docker-entrypoint.sh"
+  elasticsearch3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.4
+    container_name: elasticsearch3
+    environment:
+      - node.name=elasticsearch3
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$CERTS_DIR/elasticsearch3/elasticsearch3.crt
+      - xpack.ssl.key=$CERTS_DIR/elasticsearch3/elasticsearch3.key
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    # privileged: true
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          cpus: '1'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    volumes:
+      - type: volume
+        source: logs
+        target: /var/log
+      - type: volume
+        source: esdata3
+        target: /usr/share/elasticsearch/data
+      - ./plugin/6.8.4:/root
+      - ./install-plugin.sh:/root/install-plugin.sh
+      - ./certs:$CERTS_DIR
+    networks:
+      - elastic
+      - ingress
+    ports:
+      - 9202:9200
+    entrypoint: >
+        bash -c "chmod +x /root/install-plugin.sh &&
+                 /root/install-plugin.sh repository-azure &&
+                 /root/install-plugin.sh analysis-kuromoji &&
+                 /root/install-plugin.sh analysis-icu &&
+               docker-entrypoint.sh"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.8.4
+    container_name: kibana
+    environment:
+      SERVER_NAME: localhost
+      ELASTICSEARCH_URL: https://elasticsearch1:9200/
+    ports:
+      - 5601:5601
+    volumes:
+      - type: volume
+        source: logs
+        target: /var/log
+        #- ./kibana/config:/usr/share/kibana/config/
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./certs:/usr/share/kibana/config/certs/
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          cpus: '1'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - elastic
+      - ingress
+
+  nginx:
+    image: nginx:latest
+    ports:
+        - 8081:80
+    volumes:
+        - ${PWD}/nginx-config/:/etc/nginx/conf.d/
+    command: /bin/bash -c "nginx -g 'daemon off;'"
+    ulimits:
+      nproc: 65535
+    networks:
+      - ingress
+
+volumes:
+  esdata1:
+  esdata2:
+  esdata3:
+  logs:
+
+networks:
+  elastic:
+  ingress:
